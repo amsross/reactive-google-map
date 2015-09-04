@@ -1,0 +1,38 @@
+[
+  {
+  "id": 0,
+  "title": "onetwosee",
+  "address": "1650 Arch St, Philadelphia, PA 19103",
+  "url": "http://www.onetwosee.com",
+  "content": "<div>OneTwoSee</div>",
+  "lat": 39.954812,
+  "lng": -75.167596
+  },
+  {
+  "id": 1,
+  "title": "second address",
+  "address": "341 Kings Hwy W, Haddonfield, NJ 08033",
+  "url": "http://www.google.com",
+  "content": "<div>second address</div>",
+  "lat": 39.892408,
+  "lng": -75.045732
+  },
+  {
+  "id": 2,
+  "title": "third address",
+  "address": "214 S Atlantic Ave, Haddonfield, NJ 08033",
+  "url": "http://www.mattross.io",
+  "content": "<div>third address</div>",
+  "lat": 39.892260,
+  "lng": -75.034464
+  },
+  {
+  "id": 3,
+  "title": "grooveground",
+  "address": "647 Haddon Ave, Collingswood, NJ 08108",
+  "url": "http://www.grooveground.com",
+  "content": "<div>grooveground</div>",
+  "lat": 39.916888,
+  "lng": -75.070367
+  }
+]
