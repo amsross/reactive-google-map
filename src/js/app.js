@@ -46,16 +46,16 @@
       .each(function( locations ) {
         var latLngBounds = this.getBounds();
         _.each( locations, function( location ) {
-          if ( !markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+          if ( !window.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
             var marker = placeMarker( location, map );
             var infoPane = attachInfoWindow( marker, location, map );
+
             window.markers[location.id] = {
               marker: marker,
               infoPane: infoPane
             };
-          } else if ( markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-            markers[location.id].marker.setMap( null );
-            delete markers[location.id];
+          } else if ( window.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+            removeMarker( location );
           }
         });
       }.bind(map))
@@ -72,6 +72,12 @@
       return marker;
     }
 
+    function removeMarker( location ) {
+      detachInfoWindow( window.markers[location.id] );
+      window.markers[location.id].marker.setMap( null );
+      delete window.markers[location.id];
+    }
+
     function attachInfoWindow( marker, location, map ) {
       // add an infoWindow for each marker
       var infoPane = new google.maps.InfoWindow({
@@ -82,6 +88,10 @@
       });
 
       return infoPane;
+    }
+
+    function detachInfoWindow( marker ) {
+      marker.removeListener( "click" );
     }
   }
 
