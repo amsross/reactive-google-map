@@ -20,6 +20,8 @@
         s.type = "text/javascript";
         s.src = "//" + window.location.hostname + ":4001/livereload.js";
         $("head").append(s);
+
+        $( "#google-map-container" ).ReactiveGMap({ lat: 39.916888, lng: -75.070367 });
       });
     </script>
   </body>
