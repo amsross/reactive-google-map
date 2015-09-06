@@ -14,6 +14,13 @@
   <body>
     <div id="google-map-container"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsosoGP7VKx0TrrnnYOjH_VeqrmOA_IM8"> </script>
-    <script src="//localhost:1337/livereload.js"></script>
+    <script>
+      $(document).ready(function() {
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "//" + window.location.hostname + ":4001/livereload.js";
+        $("head").append(s);
+      });
+    </script>
   </body>
 </html>
