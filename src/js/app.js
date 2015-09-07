@@ -33,12 +33,11 @@
         }.bind(this))
         .apply(function( map ) {
 
+          // listen to map events
           h( "bounds_changed", map )
             .debounce( 500 )
-            .map( this.getLocations.bind(map) )
-            .map(function( locations ) {
-              return h(locations);
-            })
+            .map( this.getLocations.bind(this, map) )
+            // process each object in the response separately
             .flatten()
             .each( this.processLocation.bind(this, map) )
             ;
@@ -88,8 +87,8 @@
     },
 
     // hit the endpoint to get the locations
-    getLocations: function() {
-      var latLngBounds = this.getBounds();
+    getLocations: function( map ) {
+      var latLngBounds = map.getBounds();
 
       return h( $.getJSON(
         "locations.json",
