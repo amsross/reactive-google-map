@@ -41,8 +41,6 @@
             .flatten()
             .each( this.processLocation.bind(this, map) )
             ;
-
-          return map;
         }.bind(this))
         ;
     },
@@ -103,26 +101,42 @@
 
     // process each location
     processLocation: function( map, location ) {
+
       var latLngBounds = map.getBounds();
+
       if ( !this.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+
+        // create and place a marker
         var marker = this.placeMarker( location, map );
+
+        // attach an InfoPane to the marker
         var infoPane = this.attachInfoWindow( marker, location, map );
+
+        // store a reference to the marker
         this.markers[location.id] = {
           marker: marker,
           infoPane: infoPane
         };
       } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+
+        // clear the marker's `map` property
         this.markers[location.id].marker.setMap( null );
+
+        // delete the stored reference
         delete this.markers[location.id];
       }
     },
 
-    // add a marker for each location
+    // add a marker for a location
     placeMarker: function( location, map ) {
+
+      // create the marker
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng( location.lat, location.lng ),
         icon: location.icon
       });
+
+      // add it to the map
       marker.setMap( map );
 
       return marker;
@@ -130,15 +144,18 @@
 
     // attach and InfoWindow to a marker
     attachInfoWindow: function( marker, location, map ) {
-      // add an infoWindow for each marker
-      var infoPane = new google.maps.InfoWindow({
+
+      // create the InfoWindow
+      var infoWindow = new google.maps.InfoWindow({
         content: location.content
       });
+
+      // attach a click handler to show the InfoWindow
       marker.addListener( "click", function() {
-        infoPane.open( map, marker );
+        infoWindow.open( map, marker );
       });
 
-      return infoPane;
+      return infoWindow;
     }
   };
 
