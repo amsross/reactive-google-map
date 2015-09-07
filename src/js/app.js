@@ -32,45 +32,15 @@
           return this.buildMap( coords.lat, coords.lng );
         }.bind(this))
         .apply(function( map ) {
-          // return an event stream
+
           h( "bounds_changed", map )
             .debounce( 500 )
-            .map(function( x ) {
-              var latLngBounds = map.getBounds();
-
-              return h( $.getJSON(
-                "locations.json",
-                {
-                  top: latLngBounds.getNorthEast().G,
-                  right: latLngBounds.getNorthEast().K,
-                  bottom: latLngBounds.getSouthWest().G,
-                  left: latLngBounds.getSouthWest().K
-                }
-              ));
-            }.bind(this))
+            .map( this.getLocations.bind(map) )
             .map(function( locations ) {
               return h(locations);
             })
-              .flatten()
-            .each(function( location ) {
-              var latLngBounds = map.getBounds();
-              if ( !this.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-                var marker = this.placeMarker( location, map );
-                var infoPane = this.attachInfoWindow( marker, location, map );
-                this.markers[location.id] = {
-                  marker: marker,
-                  infoPane: infoPane
-                };
-              } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-                this.markers[location.id].marker.setMap( null );
-                delete this.markers[location.id];
-              }
-
-              return location;
-            }.bind(this))
-            .each(function( x ) {
-              console.log( x );
-            })
+            .flatten()
+            .each( this.processLocation.bind(this, map) )
             ;
 
           return map;
@@ -78,6 +48,7 @@
         ;
     },
 
+    // get either the users current location, or the provided defaults
     getCoords: function() {
 
       return function( push, next ) {
@@ -100,6 +71,7 @@
       }.bind(this);
     },
 
+    // construct the map object
     buildMap: function( lat, lng ) {
 
       var mapOpts = $.extend( {
@@ -115,8 +87,39 @@
       return map;
     },
 
+    // hit the endpoint to get the locations
+    getLocations: function() {
+      var latLngBounds = this.getBounds();
+
+      return h( $.getJSON(
+        "locations.json",
+        {
+          top: latLngBounds.getNorthEast().G,
+          right: latLngBounds.getNorthEast().K,
+          bottom: latLngBounds.getSouthWest().G,
+          left: latLngBounds.getSouthWest().K
+        }
+      ));
+    },
+
+    // process each location
+    processLocation: function( map, location ) {
+      var latLngBounds = map.getBounds();
+      if ( !this.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+        var marker = this.placeMarker( location, map );
+        var infoPane = this.attachInfoWindow( marker, location, map );
+        this.markers[location.id] = {
+          marker: marker,
+          infoPane: infoPane
+        };
+      } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+        this.markers[location.id].marker.setMap( null );
+        delete this.markers[location.id];
+      }
+    },
+
+    // add a marker for each location
     placeMarker: function( location, map ) {
-      // add a marker for each location
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng( location.lat, location.lng ),
         icon: location.icon
@@ -126,6 +129,7 @@
       return marker;
     },
 
+    // attach and InfoWindow to a marker
     attachInfoWindow: function( marker, location, map ) {
       // add an infoWindow for each marker
       var infoPane = new google.maps.InfoWindow({
