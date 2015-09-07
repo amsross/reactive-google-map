@@ -26,17 +26,78 @@
 
     init: function() {
 
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          // instantiate the map a the user"s location
-          this.buildMap( position.coords.latitude, position.coords.longitude );
-        }.bind(this), function() {
-          this.buildMap( this.options.lat, this.options.lng );
-        }.bind(this));
-      } else {
-        // instantiate the map a the default location
-        this.buildMap( this.options.lat, this.options.lng );
-      }
+      h(this.getCoords())
+        .map(function( coords ) {
+          // use the coords to center the map
+          return this.buildMap( coords.lat, coords.lng );
+        }.bind(this))
+        .apply(function( map ) {
+          // return an event stream
+          h( "bounds_changed", map )
+            .debounce( 500 )
+            .map(function( x ) {
+              var latLngBounds = map.getBounds();
+
+              return h( $.getJSON(
+                "locations.json",
+                {
+                  top: latLngBounds.getNorthEast().G,
+                  right: latLngBounds.getNorthEast().K,
+                  bottom: latLngBounds.getSouthWest().G,
+                  left: latLngBounds.getSouthWest().K
+                }
+              ));
+            }.bind(this))
+            .map(function( locations ) {
+              return h(locations);
+            })
+              .flatten()
+            .each(function( location ) {
+              var latLngBounds = map.getBounds();
+              if ( !this.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+                var marker = this.placeMarker( location, map );
+                var infoPane = this.attachInfoWindow( marker, location, map );
+                this.markers[location.id] = {
+                  marker: marker,
+                  infoPane: infoPane
+                };
+              } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
+                this.markers[location.id].marker.setMap( null );
+                delete this.markers[location.id];
+              }
+
+              return location;
+            }.bind(this))
+            .each(function( x ) {
+              console.log( x );
+            })
+            ;
+
+          return map;
+        }.bind(this))
+        ;
+    },
+
+    getCoords: function() {
+
+      return function( push, next ) {
+
+        if ( "geolocation" in navigator ) {
+          navigator.geolocation.getCurrentPosition(function( position ) { // success
+            // the user's location
+            push( null, { lat: position.coords.latitude, lng: position.coords.longitude } );
+            push( null, h.nil );
+          }.bind(this), function() { // error
+            // the default location
+            push( null, { lat: this.options.lat, lng: this.options.lng } );
+            push( null, h.nil );
+          }.bind(this));
+        } else {
+          // the default location
+          push( null, { lat: this.options.lat, lng: this.options.lng } );
+          push( null, h.nil );
+        }
+      }.bind(this);
     },
 
     buildMap: function( lat, lng ) {
@@ -48,42 +109,10 @@
         }
       }, this.options.mapOpts );
 
-      this.map = new google.maps.Map( this.element, mapOpts);
+      var map = new google.maps.Map( this.element, mapOpts );
+      map.on = map.addListener;
 
-      this.map.on = this.map.addListener;
-
-      var change = h( "bounds_changed", this.map )
-        .debounce( 500 )
-        .flatMap(function() {
-          var latLngBounds = this.map.getBounds();
-
-          return h( $.getJSON(
-            "locations.json",
-            {
-              top: latLngBounds.getNorthEast().G,
-              right: latLngBounds.getNorthEast().K,
-              bottom: latLngBounds.getSouthWest().G,
-              left: latLngBounds.getSouthWest().K
-            }
-          ));
-        }.bind(this))
-        .each(function( locations ) {
-          var latLngBounds = this.map.getBounds();
-          _.each( locations, function( location ) {
-            if ( !this.markers[location.id] && latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-              var marker = this.placeMarker( location, this.map );
-              var infoPane = this.attachInfoWindow( marker, location, this.map );
-              this.markers[location.id] = {
-                marker: marker,
-                infoPane: infoPane
-              };
-            } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-              this.markers[location.id].marker.setMap( null );
-              delete this.markers[location.id];
-            }
-          }.bind(this));
-        }.bind(this))
-        ;
+      return map;
     },
 
     placeMarker: function( location, map ) {
