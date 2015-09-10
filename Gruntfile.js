@@ -12,7 +12,7 @@ module.exports = function(grunt){
     uglify: {
       app: {
         files: {
-          "build/js/app.min.js": [
+          "dist/app.min.js": [
             "src/js/app.js"
           ],
         },
@@ -70,7 +70,7 @@ module.exports = function(grunt){
           livereload: 4001
         },
         files: [
-          "build/**/*.js",
+          "dist/**/*.js",
           "locations.json",
           "index.html"
         ]
