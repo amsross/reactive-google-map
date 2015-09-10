@@ -3,16 +3,19 @@
   <head>
     <title>Reactive Google Map</title>
     <style>
-      #google-map-container {
-        width: 100vw;
-        height: 75vw;
+      .google-map-container {
+        float: left;
+        height: 50vw;
+        margin: 1vw;
+        width: 46vw;
       }
     </style>
     <script src="build/js/vendors.min.js"></script>
     <script src="build/js/app.min.js"></script>
   </head>
   <body>
-    <div id="google-map-container"></div>
+    <div class="google-map-container coords"></div>
+    <div class="google-map-container geolocate"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsosoGP7VKx0TrrnnYOjH_VeqrmOA_IM8"> </script>
     <script>
       $(document).ready(function() {
@@ -21,10 +24,14 @@
         s.src = "//" + window.location.hostname + ":4001/livereload.js";
         $("head").append(s);
 
-        $( "#google-map-container" ).ReactiveGMap({
+        $( ".google-map-container.coords" ).ReactiveGMap({
           url: "http://visitsouthjersey.com/wp-json/vsj/map-locations",
-          lat: 39.916888,
-          lng: -75.070367
+          lat: 39.95,
+          lng: -75.03
+        });
+
+        $( ".google-map-container.geolocate" ).ReactiveGMap({
+          url: "http://visitsouthjersey.com/wp-json/vsj/map-locations"
         });
       });
     </script>
