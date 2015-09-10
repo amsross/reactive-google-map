@@ -18,12 +18,12 @@
     this._defaults = defaults;
     this._name = pluginName;
 
+    this.markers = {};
+
     this.init();
   }
 
   Plugin.prototype = {
-
-    markers: {},
 
     init: function() {
 
