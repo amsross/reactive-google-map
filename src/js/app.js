@@ -51,14 +51,12 @@
 
       return function( push, next ) {
 
-        if ( "geolocation" in navigator ) {
+        if ( "geolocation" in navigator && ( !this.options.lat || !this.options.lng ) ) {
           navigator.geolocation.getCurrentPosition(function( position ) { // success
             // the user's location
             push( null, { lat: position.coords.latitude, lng: position.coords.longitude } );
             push( null, h.nil );
-          }.bind(this), function() { // error
-            // the default location
-            push( null, { lat: this.options.lat, lng: this.options.lng } );
+          }.bind(this), function( err ) { // error
             push( null, h.nil );
           }.bind(this));
         } else {
