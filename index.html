@@ -3,19 +3,28 @@
   <head>
     <title>Reactive Google Map</title>
     <style>
+      h1,
       .google-map-container {
         float: left;
-        height: 50vw;
         margin: 1vw;
-        width: 46vw;
+        width: 44vw;
+      }
+      .google-map-container {
+        height: 44vw;
       }
     </style>
     <script src="build/js/vendors.min.js"></script>
     <script src="build/js/app.min.js"></script>
   </head>
   <body>
-    <div class="google-map-container coords"></div>
-    <div class="google-map-container geolocate"></div>
+    <h1>Live Coords</h1>
+    <h1>Live Geo</h1>
+    <div class="google-map-container coords live"></div>
+    <div class="google-map-container geolocate live"></div>
+    <h1>Dev Coords</h1>
+    <h1>Dev Geo</h1>
+    <div class="google-map-container coords dev"></div>
+    <div class="google-map-container geolocate dev"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsosoGP7VKx0TrrnnYOjH_VeqrmOA_IM8"> </script>
     <script>
       $(document).ready(function() {
@@ -24,14 +33,24 @@
         s.src = "//" + window.location.hostname + ":4001/livereload.js";
         $("head").append(s);
 
-        $( ".google-map-container.coords" ).ReactiveGMap({
+        $( ".google-map-container.coords.live" ).ReactiveGMap({
           url: "http://visitsouthjersey.com/wp-json/vsj/map-locations",
           lat: 39.95,
           lng: -75.03
         });
 
-        $( ".google-map-container.geolocate" ).ReactiveGMap({
+        $( ".google-map-container.geolocate.live" ).ReactiveGMap({
           url: "http://visitsouthjersey.com/wp-json/vsj/map-locations"
+        });
+
+        $( ".google-map-container.coords.dev" ).ReactiveGMap({
+          url: "http://blue-box-121010.nitrousapp.com:3000/wp-json/vsj/map-locations",
+          lat: 39.95,
+          lng: -75.03
+        });
+
+        $( ".google-map-container.geolocate.dev" ).ReactiveGMap({
+          url: "http://blue-box-121010.nitrousapp.com:3000/wp-json/vsj/map-locations",
         });
       });
     </script>
