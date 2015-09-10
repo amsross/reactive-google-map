@@ -2,6 +2,7 @@
 
   var pluginName = "ReactiveGMap",
     defaults = {
+      url: null,
       mapOpts: {
         zoom: 15,
         zoomControl: true,
@@ -89,7 +90,7 @@
       var latLngBounds = map.getBounds();
 
       return h( $.getJSON(
-        "locations.json",
+        this.options.url,
         {
           top: latLngBounds.getNorthEast().G,
           right: latLngBounds.getNorthEast().K,
