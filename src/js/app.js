@@ -37,9 +37,13 @@
           // listen to map events
           h( "bounds_changed", map )
             .debounce( 500 )
+            // get locations from the API based on the view
             .map( this.getLocations.bind(this, map) )
-            // process each object in the response separately
+            .merge()
+            // remove markers that aren't in the request
+            .map( this.removeMarkers.bind(this) )
             .flatten()
+            // process each object in the response separately
             .each( this.processLocation.bind(this, map) )
             ;
         }.bind(this))
@@ -116,9 +120,6 @@
           marker: marker,
           infoPane: infoPane
         };
-      } else if ( this.markers[location.id] && !latLngBounds.contains( new google.maps.LatLng( location.lat, location.lng ) ) ) {
-
-        this.removeMarker( location );
       }
     },
 
@@ -153,9 +154,24 @@
       return infoWindow;
     },
 
-    removeMarker: function( location ) {
-      this.markers[location.id].marker.setMap( null );
-      delete this.markers[location.id];
+    removeMarkers: function( locations ) {
+      // the location ids from the response
+      var location_ids = _.pluck( locations, "id" );
+      // the ids of the markers on the map
+      var markers = _.keys( this.markers );
+      // the ids of locations still on the map, but not in the response
+      var defunct = _.difference( markers, location_ids );
+
+      _.each( defunct, function( location_id ) {
+        this.removeMarker( location_id );
+      }, this);
+
+      return locations;
+    },
+
+    removeMarker: function( location_id ) {
+      this.markers[location_id].marker.setMap( null );
+      delete this.markers[location_id];
     }
   };
 
