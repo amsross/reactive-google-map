@@ -1,21 +1,27 @@
 {
   "name": "reactive-google-map",
-  "version": "0.0.1",
   "authors": [
     "Matt Ross <matt@mattross.io>"
   ],
   "license": "MIT",
-  "homepage": "https://www.mattross.io/reactive-google-map",
   "ignore": [
     "**/.*",
     "node_modules",
-    "bower_components",
-    "test",
-    "tests"
+    "bower_components"
   ],
   "dependencies": {
     "highland": "~2.5.1",
     "jquery": "~2.1.4",
     "lodash": "~3.10.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/amsross/reactive-google-map.git"
+  },
+  "keywords": [
+    "reactive",
+    "google maps",
+    "highland",
+    "jquery"
+  ]
 }
