@@ -158,7 +158,7 @@
       // the location ids from the response
       var location_ids = _.pluck( locations, "id" );
       // the ids of the markers on the map
-      var markers = _.keys( this.markers );
+      var markers = _.map(_.keys( this.markers ), _.parseInt);
       // the ids of locations still on the map, but not in the response
       var defunct = _.difference( markers, location_ids );
 
