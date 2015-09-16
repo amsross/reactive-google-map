@@ -94,10 +94,10 @@
       return h( $.getJSON(
         this.options.url,
         {
-          top: latLngBounds.getNorthEast().G,
-          right: latLngBounds.getNorthEast().K,
-          bottom: latLngBounds.getSouthWest().G,
-          left: latLngBounds.getSouthWest().K
+          top: latLngBounds.getNorthEast().lat(),
+          right: latLngBounds.getNorthEast().lng(),
+          bottom: latLngBounds.getSouthWest().lat(),
+          left: latLngBounds.getSouthWest().lng()
         }
       ));
     },
