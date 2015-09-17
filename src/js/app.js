@@ -19,6 +19,7 @@
     this._name = pluginName;
 
     this.markers = {};
+    this.infoWindow = null;
 
     this.init();
   }
@@ -112,13 +113,13 @@
         // create and place a marker
         var marker = this.placeMarker( location, map );
 
-        // attach an InfoPane to the marker
-        var infoPane = this.attachInfoWindow( marker, location, map );
+        // attach an InfoWindow to the marker
+        var infoWindow = this.attachInfoWindow( marker, location, map );
 
         // store a reference to the marker
         this.markers[location.id] = {
           marker: marker,
-          infoPane: infoPane
+          infoWindow: infoWindow
         };
       }
     },
@@ -148,8 +149,18 @@
 
       // attach a click handler to show the InfoWindow
       marker.addListener( "click", function() {
+
+        // if there is an open InfoWindow, close it
+        if ( this.infoWindow ) {
+          this.infoWindow.close();
+        }
+
+        // open the desired InfoWindow
         infoWindow.open( map, marker );
-      });
+
+        // set this InforWindow as the current one
+        this.infoWindow = infoWindow;
+      }.bind(this));
 
       return infoWindow;
     },
